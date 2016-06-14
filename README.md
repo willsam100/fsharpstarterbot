@@ -1,4 +1,4 @@
-# Microsoft BotFramework starter written in FSharp using Suave.io with deploy on Azure and Heroku
+# Cross-platform Microsoft BotFramework starter written in FSharp using Suave.io with deploy on Azure and Heroku
 
 [![Deploy to Azure](http://azuredeploy.net/deploybutton.png)](https://azuredeploy.net/)
 [![Deploy to Heroku](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy)
@@ -8,21 +8,41 @@ in turn is based on [suavebootstrapper](https://github.com/shanselman/suaveboots
 It is a small sample that shows how to create a [https://dev.botframework.com](Microsoft BotFramework) bot using [FSharp](http://fsharp.org) 
 and [Suave.io](https://suave.io), that can be hosted on both Azure and Heroku.
 
-
 The FSharp code has been tested on both Windows 10 using the [BotEmulator](https://aka.ms/bf-bc-emulator) and on OSX El Capitan using
 [Console BotEmulator](http://aka.ms/bfemulator).
 
-## Quick start Windows
+## Getting started Windows
 
 * Get the required components for [FSharp Windows](http://fsharp.org/use/windows/)
 * Clone the repo: `git clone https://github.com/jgoalby/fsharpstarterbot.git`.
 * Run build.cmd to install the paket dependencies: `build.cmd`.
 * Test the bot with the [BotEmulator](https://aka.ms/bf-bc-emulator).
 
-## Quick start OSX
+## Getting started OSX
 
 * Get required components for [FSharp Mac](http://fsharp.org/use/mac) 
 * Clone the repo: `git clone https://github.com/jgoalby/fsharpstarterbot.git`.
 * Run build.sh to install the paket dependencies: `./build.sh`.
 * Test the bot with the [Console BotEmulator](http://aka.ms/bfemulator).
 
+### What's included
+
+You'll find the following directories and files:
+
+```
+fsharpstarterbot/
+├── .paket/
+│   └── paket.bootstrapper.exe    bootstraps paket.exe
+├── .deployment                   deployment file for azure
+├── Procfile                      deployment file for heroku
+├── app.azure.fsx                 fsharp script for azure which loads app.fsx
+├── app.fsx                       fsharp script containing the botframework code
+├── app.heroku.fsx                fsharp script for heroku which loads app.fsx
+├── app.json                      information about this app
+├── build.cmd                     install and run on windows
+├── build.fsx                     common build fsharp script
+├── build.sh                      install and run on mono platforms
+├── paket.dependencies            project dependencies
+├── paket.lock                    project dependencies
+└── web.config                    configuration for azure
+```

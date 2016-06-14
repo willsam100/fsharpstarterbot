@@ -1,10 +1,10 @@
 {
-  "name": "Suave.io demo application",
-  "description": "Simple Suave.io web app with easy Heroku and Azure deployment",
-  "website": "http://suave.io/",
-  "repository": "https://github.com/tpetricek/suave-xplat-gettingstarted",
+  "name": "Microsoft BotFramework starter using FSharp and Suave.io",
+  "description": "Cross-platform starter bot using FSharp and Suave.io with easy Heroku and Azure deployment",
+  "website": "https://dev.botframework.com",
+  "repository": "https://github.com/jgoalby/fsharpstarterbot",
   "logo": "https://raw.githubusercontent.com/SuaveIO/suave/gh-pages/images/logo.gif",
-  "keywords": [ "suave", "fsharp" ],
+  "keywords": [ "botframework", "bot", "suave", "fsharp" ],
   "env": {
     "BUILDPACK_URL": "https://github.com/SuaveIO/mono-script-buildpack.git"
   }
