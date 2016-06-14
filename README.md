@@ -20,7 +20,7 @@ The FSharp code has been tested on both Windows 10 using the [BotEmulator](https
 
 ## Getting started OSX/Linux
 
-* Get required components to run [FSharp on Mac](http://fsharp.org/use/mac) or [FSharp on Linux](http://fsharp.org/use/linux/) if you don't already have them.
+* Get required components to run [FSharp on Mac](http://fsharp.org/use/mac) or [FSharp on Linux](http://fsharp.org/use/linux) if you don't already have them.
 * Clone the repo: `git clone https://github.com/jgoalby/fsharpstarterbot.git`.
 * Run build.sh to install the paket dependencies: `./build.sh`.
 * Test the bot with the [Console BotEmulator](http://aka.ms/bfemulator).
