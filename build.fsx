@@ -13,7 +13,6 @@ open System
 open System.IO
 open Suave
 open Suave.Web
-//open Suave.Types
 open Microsoft.FSharp.Compiler.Interactive.Shell
 
 // --------------------------------------------------------------------------------------

@@ -12,6 +12,6 @@ let serverConfig =
   { Web.defaultConfig with
       homeFolder = Some __SOURCE_DIRECTORY__
       logger = Logging.Loggers.saneDefaultsFor Logging.LogLevel.Warn
-      bindings = [ Types.HttpBinding.mkSimple Types.HTTP "0.0.0.0" port ] }
+      bindings = [ HttpBinding.mkSimple HTTP "0.0.0.0" port ] }
 
 Web.startWebServer serverConfig app
