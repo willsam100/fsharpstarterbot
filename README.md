@@ -5,7 +5,24 @@
 
 This site is based on [suave-fshome](https://github.com/tpetricek/suave-fshome) by [@tpetricek](https://github.com/tpetricek) which
 in turn is based on [suavebootstrapper](https://github.com/shanselman/suavebootstrapper) by [@shanselman](http://github.com/shanselman). 
-It is a small sample that shows how to create a Microsoft BotFramework bot using [FSharp](http://fsharp.org) and [Suave.io](https://suave.io), 
-that can be hosted on both Azure and Heroku.
+It is a small sample that shows how to create a [https://dev.botframework.com](Microsoft BotFramework) bot using [FSharp](http://fsharp.org) 
+and [Suave.io](https://suave.io), that can be hosted on both Azure and Heroku.
 
+
+The FSharp code has been tested on both Windows 10 using the [BotEmulator](https://aka.ms/bf-bc-emulator) and on OSX El Capitan using
+[Console BotEmulator](http://aka.ms/bfemulator).
+
+## Quick start Windows
+
+* Get the required components for [FSharp Windows](http://fsharp.org/use/windows/)
+* Clone the repo: `git clone https://github.com/jgoalby/fsharpstarterbot.git`.
+* Run build.cmd to install the paket dependencies: `build.cmd`.
+* Test the bot with the [BotEmulator](https://aka.ms/bf-bc-emulator).
+
+## Quick start OSX
+
+* Get required components for [FSharp Mac](http://fsharp.org/use/mac) 
+* Clone the repo: `git clone https://github.com/jgoalby/fsharpstarterbot.git`.
+* Run build.sh to install the paket dependencies: `./build.sh`.
+* Test the bot with the [Console BotEmulator](http://aka.ms/bfemulator).
 
