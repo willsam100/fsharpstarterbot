@@ -13,14 +13,14 @@ The FSharp code has been tested on both Windows 10 using the [BotEmulator](https
 
 ## Getting started Windows
 
-* Get the required components for [FSharp Windows](http://fsharp.org/use/windows/)
+* Get the required components to run [FSharp on Windows](http://fsharp.org/use/windows/) if you don't already have them.
 * Clone the repo: `git clone https://github.com/jgoalby/fsharpstarterbot.git`.
 * Run build.cmd to install the paket dependencies: `build.cmd`.
 * Test the bot with the [BotEmulator](https://aka.ms/bf-bc-emulator).
 
-## Getting started OSX
+## Getting started OSX/Linux
 
-* Get required components for [FSharp Mac](http://fsharp.org/use/mac) 
+* Get required components to run [FSharp on Mac](http://fsharp.org/use/mac) or [FSharp on Linux](http://fsharp.org/use/linux/) if you don't already have them.
 * Clone the repo: `git clone https://github.com/jgoalby/fsharpstarterbot.git`.
 * Run build.sh to install the paket dependencies: `./build.sh`.
 * Test the bot with the [Console BotEmulator](http://aka.ms/bfemulator).
@@ -33,16 +33,22 @@ You'll find the following directories and files:
 fsharpstarterbot/
 ├── .paket/
 │   └── paket.bootstrapper.exe    bootstraps paket.exe
+│
 ├── .deployment                   deployment file for azure
 ├── Procfile                      deployment file for heroku
+│
 ├── app.azure.fsx                 fsharp script for azure which loads app.fsx
 ├── app.fsx                       fsharp script containing the botframework code
 ├── app.heroku.fsx                fsharp script for heroku which loads app.fsx
+│
 ├── app.json                      information about this app
+│
 ├── build.cmd                     install and run on windows
 ├── build.fsx                     common build fsharp script
 ├── build.sh                      install and run on mono platforms
+│
 ├── paket.dependencies            project dependencies
 ├── paket.lock                    project dependencies
+│
 └── web.config                    configuration for azure
 ```
