@@ -18,8 +18,12 @@ open Microsoft.Bot.Builder.Dialogs
 open System
 open System.Threading.Tasks
 
-let appId = "John"
-let appSecret = "Secret"
+let envAsOption (envVarName : string) =
+    let envVarValue = Environment.GetEnvironmentVariable(envVarName)
+    if ((isNull envVarValue) || (envVarValue.Trim().Length = 0)) then None else Some envVarValue
+
+let appId = defaultArg (envAsOption "BOTAPPID") "John"
+let appSecret = defaultArg (envAsOption "BOTAPPSECRET") "Secret"
 
 [<AutoOpen>]
 module Helpers = 
