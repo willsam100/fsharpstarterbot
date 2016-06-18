@@ -6,7 +6,7 @@
 This site is based on a combination of [BotFramework-Suave](https://github.com/Krzysztof-Cieslak/BotFramework-Suave) and also
 [suave-fshome](https://github.com/tpetricek/suave-fshome) by [@tpetricek](https://github.com/tpetricek) which
 in turn is based on [suavebootstrapper](https://github.com/shanselman/suavebootstrapper) by [@shanselman](http://github.com/shanselman). 
-It is a small sample that shows how to create a [https://dev.botframework.com](Microsoft BotFramework) bot using [FSharp](http://fsharp.org) 
+It is a small sample that shows how to create a [Microsoft BotFramework](https://dev.botframework.com) bot using [FSharp](http://fsharp.org) 
 and [Suave.io](https://suave.io), that can be hosted on both Azure and Heroku.
 
 The FSharp code has been tested on both Windows 10 using the [BotEmulator](https://aka.ms/bf-bc-emulator) and on OSX El Capitan using
