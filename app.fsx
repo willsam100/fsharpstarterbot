@@ -114,9 +114,11 @@ let botHandler (message : Message) =
 
 /// Suave application
 let app = 
-    choose [ path "/" >=> OK "Hello World!" 
-             Authentication.authenticateBasic ((=) (appId, appSecret)) <|
-                 choose [ path "/api/messages" >=> request (getResourceFromReq >> botHandler >> toJson ) ] ]
+    choose [ 
+        path "/" >=> OK "Hello World!" 
+        path "/api/messages" >=> request (getResourceFromReq >> botHandler >> toJson ) ]
+            //  Authentication.authenticateBasic ((=) (appId, appSecret)) <|
+            //      choose [
 
 // This is handled in the host specific code within build.fsx, such as Azure/Heroku
 //startWebServer defaultConfig app
