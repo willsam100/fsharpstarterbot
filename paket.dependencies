@@ -7,11 +7,14 @@ nuget FSharp.Compiler.Service 3.0.0 framework: >= net461
 nuget FSharp.Core 4.0.0.1 framework: >= net461
 nuget FSharp.Data 2.3.0 framework: >= net461
 nuget FsPickler 2.3.0 framework: >= net461
-nuget Microsoft.AspNet.WebApi.Client 5.2.3 framework: >= net452
-nuget Microsoft.AspNet.WebApi.Core 5.2.3 framework: >= net452
-nuget Microsoft.Bot.Builder 1.2.3 framework: >= net461
-nuget Microsoft.Bot.Connector 1.1.0.0 framework: >= net452
-nuget Microsoft.Rest.ClientRuntime 1.8.2 framework: >= net452
-nuget Microsoft.WindowsAzure.ConfigurationManager 3.2.1 framework: >= net461
-nuget Newtonsoft.Json 8.0.3 framework: >= net461
+nuget Http.fs
+nuget Microsoft.AspNet.WebApi.Client framework: >= net452
+nuget Microsoft.AspNet.WebApi.Core framework: >= net452
+nuget Microsoft.Bot.Builder framework: >= net461
+nuget Microsoft.Rest.ClientRuntime framework: >= net452
+nuget Microsoft.WindowsAzure.ConfigurationManager framework: >= net461
+nuget Newtonsoft.Json
 nuget Suave 1.1.2 framework: >= net461
+nuget SwaggerProvider
+nuget System.IdentityModel.Tokens.Jwt
+nuget System.Net.Http
