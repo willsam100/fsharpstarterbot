@@ -1,0 +1,8 @@
+#load @"newtonsoft.json.fsx" 
+#r "System" 
+#r "System.Net" 
+#r "System.Net.Http" 
+#r "System.Net.Http.WebRequest" 
+#r "System.Runtime.Serialization" 
+#r "System.Xml" 
+#r "../../packages/Microsoft.Rest.ClientRuntime/lib/net45/Microsoft.Rest.ClientRuntime.dll" 

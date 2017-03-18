@@ -1,0 +1,1 @@
+#r "../../packages/Microsoft.IdentityModel.Logging/lib/net451/Microsoft.IdentityModel.Logging.dll" 

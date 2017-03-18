@@ -1,0 +1,20 @@
+source https://api.nuget.org/v3/index.json
+
+nuget Autofac 3.5.2 framework: >= net461
+nuget Chronic.Signed 0.3.2 framework: >= net461
+nuget FAKE 4.28.0 framework: >= net461
+nuget FSharp.Compiler.Service 3.0.0 framework: >= net461
+nuget FSharp.Core 4.0.0.1 framework: >= net461
+nuget FSharp.Data 2.3.0 framework: >= net461
+nuget FsPickler 2.3.0 framework: >= net461
+nuget Http.fs framework: >= net452
+nuget Microsoft.AspNet.WebApi.Client framework: >= net452
+nuget Microsoft.AspNet.WebApi.Core framework: >= net452
+nuget Microsoft.Bot.Builder 3.5.3 framework: >= net461
+nuget Microsoft.Rest.ClientRuntime framework: >= net452
+nuget Microsoft.WindowsAzure.ConfigurationManager framework: >= net461
+nuget Newtonsoft.Json framework: >= net452
+nuget Suave 1.1.2 framework: >= net461
+nuget SwaggerProvider framework: >= net452
+nuget System.IdentityModel.Tokens.Jwt 4.0.2.206221351 framework: >= net45
+nuget System.Net.Http framework: >= net452

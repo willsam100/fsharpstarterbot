@@ -1,0 +1,5 @@
+#load @"newtonsoft.json.fsx" 
+#load @"yamldotnet.fsx" 
+#r "../../packages/SwaggerProvider/lib/net45/SwaggerProvider.dll" 
+#r "../../packages/SwaggerProvider/lib/net45/SwaggerProvider.Runtime.dll" 
+#r "../../packages/SwaggerProvider/lib/net45/SwaggerProvider.DesignTime.dll" 

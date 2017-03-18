@@ -1,0 +1,1 @@
+#r "../../packages/Chronic.Signed/lib/net40/Chronic.dll" 

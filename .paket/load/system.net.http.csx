@@ -1,0 +1,6 @@
+#load "system.security.cryptography.x509certificates.csx" 
+#r "System" 
+#r "System.Core" 
+#r "System.Net.Http" 
+#r "mscorlib" 
+#r "../../packages/System.Net.Http/lib/net46/System.Net.Http.dll" 
