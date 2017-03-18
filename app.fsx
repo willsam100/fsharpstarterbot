@@ -10,8 +10,16 @@
 #r "/Users/Ashley/code/fsharpstarterbot/packages/Hopac/lib/net45/Hopac.Core.dll"
 #r "/Users/Ashley/code/fsharpstarterbot/packages/Hopac/lib/net45/Hopac.dll"
 #r "/Users/Ashley/code/fsharpstarterbot/packages/Http.fs/lib/net40/HttpFs.dll"
-#r "/Users/Ashley/code/fsharpstarterbot/packages/System.IdentityModel.Tokens.Jwt/lib/net45/System.IdentityModel.Tokens.Jwt.dll"
+#r "/Users/Ashley/code/fsharpstarterbot/packages/Microsoft.IdentityModel.Protocol.Extensions/lib/net45/Microsoft.IdentityModel.Protocol.Extensions.dll"
+#r "/Users/Ashley/code/fsharpstarterbot/packages/System.Security.Cryptography.X509Certificates/lib/net461/System.Security.Cryptography.X509Certificates.dll"
+#r "/Users/Ashley/code/fsharpstarterbot/packages/System.IdentityModel.Tokens.Jwt/lib/net451/System.IdentityModel.Tokens.Jwt.dll"
+#r "/Users/Ashley/code/fsharpstarterbot/packages/Microsoft.IdentityModel.Tokens/lib/net451/Microsoft.IdentityModel.Tokens.dll"
+#r "/Users/Ashley/code/fsharpstarterbot/packages/Microsoft.IdentityModel.Logging/lib/net451/Microsoft.IdentityModel.Logging.dll"
 #load @"packages/SwaggerProvider/SwaggerProvider.fsx"
+#load "/Users/Ashley/code/fsharpstarterbot/.paket/load/microsoft.identitymodel.tokens.fsx"
+#load "/Users/Ashley/code/fsharpstarterbot/.paket/load/microsoft.identitymodel.logging.fsx"
+#load "/Users/Ashley/code/fsharpstarterbot/.paket/load/system.identitymodel.tokens.jwt.fsx"
+
 open SwaggerProvider
 
 // open Encodings
@@ -20,7 +28,9 @@ open System.Security.Claims
 open System.IdentityModel.Tokens
 open System.Security.Cryptography
 // open System.Globalization.Encodings
-//System.IdentityModel.Tokens.Jwt
+open System.Security.Claims
+open System.IdentityModel.Tokens.Jwt
+open System.Security.Cryptography
 
 open Suave
 open Suave.Successful
@@ -36,9 +46,10 @@ open System
 open System.Threading.Tasks
 open Hopac
 open HttpFs.Client
+open System.IdentityModel
 
-let [<Literal>]schema = __SOURCE_DIRECTORY__ + "/botConnectorv3.json"
-type BotConnector = SwaggerProvider<schema, "Content-Type=application/json">    
+let [<Literal>]Schema = __SOURCE_DIRECTORY__ + "/botConnectorv3.json"
+type BotConnector = SwaggerProvider<Schema, "Content-Type=application/json">    
 
 let envAsOption (envVarName : string) =
     let envVarValue = Environment.GetEnvironmentVariable(envVarName)
@@ -50,54 +61,31 @@ let appSecret = defaultArg (envAsOption "MicrosoftAppPassword") "Secret"
 [<AutoOpen>]
 module Helpers = 
 
-    type JwtConfig = {
-        Issuer : string
-        SecurityKey : SecurityKey
-        ClientId : string
-    }
+    let defaultSettings =   
+        JsonSerializerSettings()  
 
-    type TokenValidationRequest = {
-        Issuer : string
-        SecurityKey : SecurityKey
-        ClientId : string
-        AccessToken : string
-    }
+    let useSnakeCase (settings: JsonSerializerSettings) = 
+        let contractResolver = DefaultContractResolver()
+        contractResolver.NamingStrategy <- new SnakeCaseNamingStrategy();
+        settings.ContractResolver <- contractResolver
+        settings
+
+    let useCamelCase (settings: JsonSerializerSettings)  = 
+        settings.ContractResolver <- new CamelCasePropertyNamesContractResolver()
+        settings
 
     let toJsonWeb v =
-        let jsonSerializerSettings = new JsonSerializerSettings()
-        let contractResolver = DefaultContractResolver()
-        // contractResolver.NamingStrategy <- new SnakeCaseNamingStrategy();
-        jsonSerializerSettings.ContractResolver <- contractResolver
-        JsonConvert.SerializeObject(v, jsonSerializerSettings)
-    let toJson v =
-        let jsonSerializerSettings = new JsonSerializerSettings()
-        jsonSerializerSettings.ContractResolver <- new CamelCasePropertyNamesContractResolver()
+        JsonConvert.SerializeObject(v, defaultSettings |> useSnakeCase)
 
-        JsonConvert.SerializeObject(v, jsonSerializerSettings) |> OK
+    let toJson v =
+        JsonConvert.SerializeObject(v, defaultSettings |> useCamelCase) |> OK
         >=> Writers.setMimeType "application/json; charset=utf-8"
 
+    let fromJsonWeb<'a> json =
+        JsonConvert.DeserializeObject(json, typeof<'a>, defaultSettings |> useSnakeCase) :?> 'a
+
     let fromJson<'a> json =
-        JsonConvert.DeserializeObject(json, typeof<'a>) :?> 'a
-
-    let jwtAuthenticate jwtConfig webpart (ctx: HttpContext) =
-
-        let updateContextWithClaims claims =
-            { ctx with userState = ctx.userState.Remove("Claims").Add("Claims", claims) }
-
-        match ctx.request.header "token" with
-        | Choice1Of2 accessToken ->
-            let tokenValidationRequest =  {
-                Issuer = jwtConfig.Issuer
-                SecurityKey = jwtConfig.SecurityKey
-                ClientId = jwtConfig.ClientId
-                AccessToken = accessToken
-            }
-            let validationResult = validate tokenValidationRequest
-            match validationResult with
-            | Choice1Of2 claims -> webpart (updateContextWithClaims claims)
-            | Choice2Of2 err -> FORBIDDEN err ctx
-
-        | _ -> BAD_REQUEST "Invalid Request. Provide both clientid and token" ctx
+        JsonConvert.DeserializeObject(json, typeof<'a>, defaultSettings |> useCamelCase) :?> 'a
 
     let getResourceFromReq<'a> (req : HttpRequest) =
         let getString rawForm =
@@ -123,23 +111,23 @@ module BotAuth =
     type GetMicrosoftTokenMessage = 
         | Fetch of AsyncReplyChannel<Token>
 
-    let tokenHolder msftAppId msftPassword = 
+    let tokenHolder () = 
 
         let getToken () = 
             let formData = [
                 "grant_type=client_credentials"
-                (sprintf "client_id=%s" msftAppId)
-                (sprintf "client_secret=%s" msftPassword) 
+                (sprintf "client_id=%s" appId)
+                (sprintf "client_secret=%s" appSecret) 
                 "scope=https://api.botframework.com/.default" ]
                 
             Request.createUrl Post "https://login.microsoftonline.com/botframework.com/oauth2/v2.0/token"
             |> Request.bodyString (String.Join("&", formData))
             |> Request.setHeader (ContentType (ContentType.create("application", "x-www-form-urlencoded")))
-            |> (fun x -> printfn "Making request: %A" x; x)
+            // |> (fun x -> printfn "Making request: %A" x; x)
             |> Request.responseAsString
             |> run
-            |> (fun x -> printfn "Repsonse: %A" x; x)
-            |> fromJson<MicrosfotTokenResposne>
+            // |> (fun x -> printfn "Repsonse: %A" x; x)
+            |> fromJsonWeb<MicrosfotTokenResposne>
             |> (fun x -> {ExpiresUtc = DateTime.UtcNow.AddSeconds( (float) x.ExpiresIn); AccessToken = x.AccessToken})
 
 
@@ -160,9 +148,9 @@ module BotAuth =
             messageLoop {ExpiresUtc = DateTime.MinValue; AccessToken = ""}
         )
 
-    let getToken msftAppId msftPassword = 
-        let token = tokenHolder msftAppId msftPassword
-        fun () -> token.PostAndReply Fetch
+    let getToken () = 
+        let token = tokenHolder ()
+        token.PostAndReply Fetch
 
 [<Serializable>]
 type MyBot () =
@@ -234,60 +222,82 @@ let toSwaggerActivity (activity: Activity) =
                         Locale = activity.Locale,
                         ServiceUrl = activity.ServiceUrl,
                         Text = activity.Text,
-                        Type = activity.Type,
-                        Value = activity.Value,
-                        LocalTimestamp = (activity.LocalTimestamp |> Option.ofNullable ))
+                        Type = activity.Type )
+                    
                         
-let botHandler (msftToken: unit -> BotAuth.Token) (message : Activity) =
+let botHandler (req: HttpRequest) (msftToken: unit -> BotAuth.Token) (message : Activity) =
     printfn "Received message of type %s: %s" message.Type message.Text
     printfn "Token expires in: %A" ((msftToken().ExpiresUtc) - DateTime.UtcNow)
 
-    let botConnector = BotConnector(message.ServiceUrl.Replace("http://", ""), 
-                                    CustomizeHttpRequest =
-                                        fun (req:System.Net.HttpWebRequest) -> 
-                                            let token = msftToken ()
-                                            // req.Headers.Add(sprintf "Authorization: Bearer %s" token.AccessToken)
-                                            req.ContentType <- "application/json"; req )
-    async {
-        match (message.Type.ToLower()) with
-        | "message" -> 
-            return catchWebException <| fun () -> 
-                let activity = message.CreateReply("Im fsharpy") |> toSwaggerActivity
-                botConnector.ConversationsReplyToActivity(message.Conversation.Id, message.Id, activity) //.ToString()
-                |> (fun x -> printfn "Response: %A" x.Id)
+    let isAuthenticated (token : string) = 
+      
+        let handler = JwtSecurityTokenHandler()
+        let parsedToken = handler.ReadJwtToken <| token.Replace ("Bearer ", "")
+        [
+            parsedToken.Audiences |> Seq.contains ("https://graph.microsoft.com")
+            parsedToken.Issuer = "https://sts.windows.net/72f988bf-86f1-41af-91ab-2d7cd011db47/"
+            // parsedToken.Payload |> (fun x -> x.ContainsKey "appid")
+            parsedToken.Payload |> (fun x -> x.ContainsValue appId)
+            parsedToken.ValidTo > DateTime.UtcNow.AddMinutes 5.
+        ]
+        |> List.fold (&&) true
 
-                                
-        | "ping" -> 
-            return catchWebException <| fun () -> 
-                let activity = message.CreateReply("ping") |> toSwaggerActivity
-                botConnector.ConversationsReplyToActivity(message.Conversation.Id, message.Id, activity) //.ToString()
-                |> (fun x -> printfn "Response: %A" x.Id)
+    match req.header "authorization" with 
+    | Choice2Of2 _ -> printfn "No authorization header supplied";
+    | Choice1Of2 x -> 
+        match isAuthenticated x with 
+        | false -> printfn "Invalid authorizaton supplied";
+        | true -> 
+            printfn "Authorization checks passed"
+            let botConnector = BotConnector(message.ServiceUrl, 
+                                            CustomizeHttpRequest =
+                                                fun (req:System.Net.HttpWebRequest) -> 
+                                                    let token = msftToken ()
+                                                    printfn "Sending respones..."
+                                                    req.Headers.Add(sprintf "Authorization: Bearer %s" token.AccessToken)
+                                                    req.ContentType <- "application/json"; req )
+            async {
+                match (message.Type.ToLower()) with
+                | "message" -> 
+                    return catchWebException <| fun () -> 
+                        let activity = message.CreateReply("Im fsharpy") |> toSwaggerActivity
+                        botConnector.ConversationsReplyToActivity(message.Conversation.Id, message.Id, activity) //.ToString()
+                        |> (fun x -> printfn "Response: %A" x.Id)
 
-        | "conversationupdate" -> 
-            printfn "System event type: %s" message.Action
-            return catchWebException <| fun () -> 
-                let newMembers = message.MembersAdded |> Seq.map (fun x -> x.Name) 
-                                 |> Seq.filter (fun x -> message.Recipient.Name <> x)
-                                 |> Seq.toArray
-                if newMembers.Length > 0 then                  
-                    let activity = message.CreateReply("Hello " + String.Join(",", newMembers)) |> toSwaggerActivity
-                    botConnector.ConversationsReplyToActivity(message.Conversation.Id, message.Id, activity) //.ToString()
-                    |> (fun x -> printfn "Response: %A" x.Id)
+                                        
+                | "ping" -> 
+                    return catchWebException <| fun () -> 
+                        let activity = message.CreateReply("ping") |> toSwaggerActivity
+                        botConnector.ConversationsReplyToActivity(message.Conversation.Id, message.Id, activity) //.ToString()
+                        |> (fun x -> printfn "Response: %A" x.Id)
 
-        | "deleteuserData"
-        | "botAddedToConversation"
-        | "BotRemovedFromConversation"
-        | "UserRemovedFromConversation"
-        | "EndOfConversation"
-        | _ -> return ()
-    } |> Async.Start
+                | "conversationupdate" -> 
+                    printfn "System event type: %s" message.Action
+                    return catchWebException <| fun () -> 
+                        let newMembers = message.MembersAdded |> Seq.map (fun x -> x.Name) 
+                                        |> Seq.filter (fun x -> message.Recipient.Name <> x)
+                                        |> Seq.toArray
+                        if newMembers.Length > 0 then                  
+                            let activity = message.CreateReply("Hello " + String.Join(",", newMembers)) |> toSwaggerActivity 
+                            activity.Attachments <- List.toArray <| [BotConnector.Attachment(ContentType = "image/png", ContentUrl = "http://fsharp.org/img/logo/fsharp256.png")] 
+                            botConnector.ConversationsReplyToActivity(message.Conversation.Id, message.Id, activity) //.ToString()
+                            |> (fun x -> printfn "Response: %A" x.Id)
+                | "deleteuserData"
+                | "botAddedToConversation"
+                | "BotRemovedFromConversation"
+                | "UserRemovedFromConversation"
+                | "EndOfConversation"
+                | _ -> return ()
+                } |> Async.Start;
 
 
 /// Suave application
 let app = 
+
+    //printfn "Environment auth details are %s %s" appId appSecret
     choose [ 
         path "/" >=> OK "Hello World!" 
-        path "/api/messages" >=> (request validateJwtToken) >=> request (getResourceFromReq >> botHandler (BotAuth.getToken appId appSecret) >> toJson ) ]
+        path "/api/messages" >=> request (fun req -> req |> getResourceFromReq |> botHandler req (BotAuth.getToken) |> toJson ) ]
             //  Authentication.authenticateBasic ((=) (appId, appSecret)) <|
             //      choose [
 

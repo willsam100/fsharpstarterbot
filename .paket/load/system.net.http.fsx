@@ -1,0 +1,5 @@
+#load @"system.security.cryptography.x509certificates.fsx" 
+#r "System" 
+#r "System.Core" 
+#r "System.Net.Http" 
+#r "../../packages/System.Net.Http/lib/net46/System.Net.Http.dll" 

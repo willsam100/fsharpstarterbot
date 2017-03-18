@@ -1,0 +1,1 @@
+#r "../../packages/Microsoft.WindowsAzure.ConfigurationManager/lib/net40/Microsoft.WindowsAzure.Configuration.dll" 
